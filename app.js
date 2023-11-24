@@ -10,6 +10,14 @@ mongoose.connect(DB_URL).then(console.log('MongoDB is connected'));
 const app = express();
 
 app.use(express.json());
+
+// ВРЕМЕННАЯ мидлвэра авторизации
+app.use((req, res, next) => {
+  // req.user = { _id: '65607231a7b577dd2bc473e0' }; // gnom
+  req.user = { _id: '655e3e96ff2d766cf7aedf6a' }; // Zoia
+  next();
+});
+
 app.use('/', appRouter);
 
 app.listen(PORT, () => {

@@ -16,3 +16,7 @@ node_modules
 
 # Environment variables
 .env
+
+# Developer's notes
+filmDataBase.json
+playground

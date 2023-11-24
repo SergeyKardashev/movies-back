@@ -1,13 +1,10 @@
 const usersRouter = require('express').Router();
+const { getUser, updateUser } = require('../controllers/users');
 
 // возвращает информацию о пользователе (email и имя)
-usersRouter.get('/me', (req, res) => {
-  res.status(200).send({ message: 'get to /users/me ' });
-});
+usersRouter.get('/me', getUser);
 
 // обновляет информацию о пользователе (email и имя)
-usersRouter.patch('/me', (req, res) => {
-  res.status(200).send({ message: 'patch to /users/me' });
-});
+usersRouter.patch('/me', updateUser);
 
 module.exports = usersRouter;
