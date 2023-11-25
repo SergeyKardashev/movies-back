@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const helmet = require('helmet');
 const cors = require('cors');
 const appRouter = require('./routes');
+const errorHandler = require('./middlewares/error-handler');
 
 const { PORT = 3000, DB_URL = 'mongodb://localhost:27017/bitfilmsdb' } = process.env;
 
@@ -17,7 +18,7 @@ app.use(cors());
 app.use(express.json());
 
 app.use('/', appRouter);
-
+app.use(errorHandler); // my global error handler and sorter for CAUGHT errors
 app.listen(PORT, () => {
   // eslint-disable-next-line no-console
   console.log(`App listening on port ${PORT}, mongoose ${mongoose.version}`);

@@ -3,27 +3,31 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const {
   STATUS_CREATED,
-  // MONGO_DUPLICATE_ERROR,
-  // STATUS_NOT_FOUND,
+  MONGO_DUPLICATE_ERROR,
+  STATUS_NOT_FOUND,
 } = require('../constants/http-status');
 const UnauthorizedError = require('../constants/unauthorized-error');
 const NotFoundError = require('../constants/not-found-error');
+const ConflictError = require('../constants/conflict-error');
+const BadRequestError = require('../constants/bad-request-error');
 
-const { SALT_ROUNDS = 10 } = process.env;
+const { SALT_ROUNDS = 10, NODE_ENV, JWT_SECRET } = process.env;
+
+// настройки чтобы update возвращал обновленные данные, а не данные до обновления
 const opts = { runValidators: true, new: true };
 
 // На странице «Регистрация» клик по кнопке «Зарегистрироваться»
 // отправляет запрос на роут / signup, если данные введены корректно.
 // Если запрос прошёл успешно, то автоматически производится вход
 // и редирект на страницу / movies.
-async function register(req, res) {
+async function register(req, res, next) {
   const { email, name, password } = req.body;
 
   try {
     const salt = await bcrypt.genSalt(Number(SALT_ROUNDS));
-    const hash = await bcrypt.hash(password, salt);
+    const hashedPassword = await bcrypt.hash(password, salt);
 
-    const user = await User.create({ email, name, password: hash });
+    const user = await User.create({ email, name, password: hashedPassword });
 
     const userWithoutPassword = user.toObject();
     delete userWithoutPassword.password;
@@ -35,17 +39,14 @@ async function register(req, res) {
     //   _id: user._id,
     // });
   } catch (err) {
-    console.error(err);
-    return new Error('err in resister');
+    if (err.code === MONGO_DUPLICATE_ERROR) return next(new ConflictError('Этот email уже используется'));
+    if (err.name === 'CastError' || err.name === 'ValidationError') return next(new BadRequestError('Переданы некорректные данные при создании пользователя'));
+    return next(err);
   }
 }
 
 // проверяет переданные в теле почту и пароль и возвращает JWT
-// заглушка - не по правилам сделано
-// токен создай колбэком.
-// в matched ошибка через return или throw?
-
-async function login(req, res) {
+async function login(req, res, next) {
   const { email, password } = req.body;
   try {
     const user = await User.findOne({ email })
@@ -55,16 +56,21 @@ async function login(req, res) {
     const matched = await bcrypt.compare(password, user.password);
     if (!matched) throw new UnauthorizedError('Неверные почта или пароль');
 
-    const token = jwt.sign({ _id: user._id }, 'dev-secret', { expiresIn: '7d' });
+    // можно вынести из login в утилиты функцию создания токена
+    const token = jwt.sign(
+      { _id: user._id },
+      NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret',
+      { expiresIn: '7d' },
+    );
     return res.status(200).send({ token });
   } catch (err) {
-    console.error(err);
-    return new Error('err in login');
+    // console.error(err);
+    return next(err);
   }
 }
 
 // возвращает инфо о пользователе (email и имя)
-function getUser(req, res) {
+function getUser(req, res, next) {
   return User.findById(req.user._id)
     .orFail(new NotFoundError('_id не найден'))
     .then((user) => {
@@ -72,16 +78,18 @@ function getUser(req, res) {
         email: user.email,
         name: user.name,
         // Не ясно возвращать ли айдишник
+        // наставник говорит можно
       });
     })
     .catch((err) => {
-      console.error(err);
-      return new Error('err in getUser');
+      if (err.statusCode === 404) return next(new NotFoundError('Пользователь по указанному _id не найден'));
+      if (err.name === 'CastError') return next(new BadRequestError('Получение пользователя с некорректным id'));
+      return next(err);
     });
 }
 
 // обновляет информацию о пользователе (email и имя)
-function updateUser(req, res) {
+function updateUser(req, res, next) {
   return User.findByIdAndUpdate(req.user._id, req.body, opts)
     .orFail(new NotFoundError())
     .then((user) => {
@@ -93,8 +101,9 @@ function updateUser(req, res) {
       });
     })
     .catch((err) => {
-      console.error(err);
-      return new Error('err in updateUser');
+      if (err.statusCode === STATUS_NOT_FOUND) return next(new NotFoundError('Пользователь по указанному _id не найден'));
+      if (err.name === 'CastError') return next(new BadRequestError('Получение пользователя с некорректным id'));
+      return next(err);
     });
 }
 

@@ -1,16 +1,18 @@
 const Movie = require('../models/movie');
+const { STATUS_CREATED } = require('../constants/http-status');
 const NotFoundError = require('../constants/not-found-error');
-// const BadRequestError = require('../constants/bad-request-error');
+const BadRequestError = require('../constants/bad-request-error');
 const ForbiddenError = require('../constants/forbidden-error');
 
 // возвращает все сохранённые текущим пользователем фильмы
-function getMovies(req, res) {
+function getMovies(req, res, next) {
   return Movie.find()
     .orFail(new Error('err in getMovies - no movies'))
-    .then((movies) => res.status(200).send(movies))
+    .then((movies) => res.send(movies))
+    // можно сократить до .catch(next);
     .catch((err) => {
       console.error(err);
-      return new Error('err in getMovies');
+      return next();
     });
 }
 
@@ -18,7 +20,7 @@ function getMovies(req, res) {
 // country, director, duration, year, description,
 // image, trailer, nameRU, nameEN и thumbnail, movieId
 // Уточнить trailerLink или trailer
-function createMovie(req, res) {
+function createMovie(req, res, next) {
   const {
     country, director, duration, year,
     description, image, trailer,
@@ -39,42 +41,50 @@ function createMovie(req, res) {
     nameRU,
     nameEN,
   })
-    .then((movie) => res.status(200).send(movie))
+    .then((movie) => res.status(STATUS_CREATED).send({
+      // нужно возвращать не все поля, из много.
+      country: movie.country,
+      director: movie.director,
+      duration: movie.duration,
+      year: movie.year,
+      description: movie.description,
+      image: movie.image,
+      trailerLink: movie.trailerLink, // не как в запросе
+      thumbnail: movie.thumbnail,
+      owner: movie.owner,
+      movieId: movie.movieId,
+      nameRU: movie.nameRU,
+      nameEN: movie.nameEN,
+      _id: movie._id, // добавил
+    }))
     .catch((err) => {
-      console.error(err);
-      return new Error('err in createMovie function');
+      // console.error(err);
+      if (err.name === 'CastError' || err.name === 'ValidationError') {
+        return next(new BadRequestError('Переданы некорректные данные при создании фильма'));
+      }
+      return next(err);
     });
 }
-// return res.status(200).send({
-//   country: movie.country,
-//   director: movie.director,
-//   duration: movie.duration,
-//   year: movie.year,
-//   description: movie.description,
-//   image: movie.image,
-//   trailer: movie.trailerLink, // переименовать???
-//   nameRU: movie.nameRU,
-//   nameEN: movie.nameEN,
-//   thumbnail: movie.thumbnail,
-//   movieId: movie.movieId,
-//   owner: movie.owner,
-//   _id: movie._id,
-// });
 
 // удаляет сохранённый фильм по id
-function deleteMovie(req, res) {
+function deleteMovie(req, res, next) {
   // есть ли фильм в бд и сравни owner до удаления
-  Movie.findById(req.params._id)
+  return Movie.findById(req.params._id)
     .orFail(new NotFoundError('Фильм с указанным _id не найден'))
     .then((movie) => {
       if (!movie.owner.equals(req.user._id)) {
-        throw ForbiddenError('Попытка удалить чужой фильм');
+        return next(new ForbiddenError('Попытка удалить чужой фильм'));
       }
-      return res.status(200).send(movie);
+      return res.send({ _id: movie._id });
     })
     .catch((err) => {
-      console.error(err);
-      return new Error('err 3 in deleteMovie - wrong owner');
+      if (err.name === 'CastError' || err.name === 'ValidationError') {
+        return next(new BadRequestError('Переданы некорректные данные'));
+      }
+      if (err.message === 'Not found') {
+        return next(new NotFoundError('Фильм с указанным _id не найден'));
+      }
+      return next(err);
     });
 }
 
