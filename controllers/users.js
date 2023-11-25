@@ -23,7 +23,7 @@ async function register(req, res) {
   const { email, name, password } = req.body;
 
   try {
-    const salt = await bcrypt.genSalt(SALT_ROUNDS);
+    const salt = await bcrypt.genSalt(Number(SALT_ROUNDS));
     const hash = await bcrypt.hash(password, salt);
 
     const user = await User.create({ email, name, password: hash });

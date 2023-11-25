@@ -1,5 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const helmet = require('helmet');
+const cors = require('cors');
 const appRouter = require('./routes');
 
 const { PORT = 3000, DB_URL = 'mongodb://localhost:27017/bitfilmsdb' } = process.env;
@@ -9,14 +11,10 @@ mongoose.connect(DB_URL).then(console.log('MongoDB is connected'));
 
 const app = express();
 
-app.use(express.json());
+app.use(helmet());
+app.use(cors());
 
-// ВРЕМЕННАЯ мидлвэра авторизации
-app.use((req, res, next) => {
-  // req.user = { _id: '65607231a7b577dd2bc473e0' }; // gnom
-  req.user = { _id: '655e3e96ff2d766cf7aedf6a' }; // Zoia
-  next();
-});
+app.use(express.json());
 
 app.use('/', appRouter);
 
