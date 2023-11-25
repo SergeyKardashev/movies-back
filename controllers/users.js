@@ -6,6 +6,8 @@ const {
   // MONGO_DUPLICATE_ERROR,
   // STATUS_NOT_FOUND,
 } = require('../constants/http-status');
+const UnauthorizedError = require('../constants/unauthorized-error');
+const NotFoundError = require('../constants/not-found-error');
 
 const { SALT_ROUNDS = 10 } = process.env;
 const opts = { runValidators: true, new: true };
@@ -48,10 +50,10 @@ async function login(req, res) {
   try {
     const user = await User.findOne({ email })
       .select('+password')
-      .orFail(new Error('err in login orFail'));
+      .orFail(new UnauthorizedError('Неверные почта или пароль'));
 
     const matched = await bcrypt.compare(password, user.password);
-    if (!matched) { return new Error('err in login !matched'); }
+    if (!matched) throw new UnauthorizedError('Неверные почта или пароль');
 
     const token = jwt.sign({ _id: user._id }, 'dev-secret', { expiresIn: '7d' });
     return res.status(200).send({ token });
@@ -64,7 +66,7 @@ async function login(req, res) {
 // возвращает инфо о пользователе (email и имя)
 function getUser(req, res) {
   return User.findById(req.user._id)
-    .orFail(new Error('err in getUser-findById-orFail'))
+    .orFail(new NotFoundError('_id не найден'))
     .then((user) => {
       res.status(200).send({
         email: user.email,
@@ -81,12 +83,13 @@ function getUser(req, res) {
 // обновляет информацию о пользователе (email и имя)
 function updateUser(req, res) {
   return User.findByIdAndUpdate(req.user._id, req.body, opts)
-    .orFail(new Error('err in findByIdAndUpdate'))
+    .orFail(new NotFoundError())
     .then((user) => {
       res.status(200).send({
         email: user.email,
         name: user.name,
         // Не ясно возвращать ли айдишник
+        // наставник говорит можно
       });
     })
     .catch((err) => {

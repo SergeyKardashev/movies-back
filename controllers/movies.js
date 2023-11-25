@@ -1,4 +1,7 @@
 const Movie = require('../models/movie');
+const NotFoundError = require('../constants/not-found-error');
+// const BadRequestError = require('../constants/bad-request-error');
+const ForbiddenError = require('../constants/forbidden-error');
 
 // возвращает все сохранённые текущим пользователем фильмы
 function getMovies(req, res) {
@@ -62,10 +65,10 @@ function createMovie(req, res) {
 function deleteMovie(req, res) {
   // есть ли фильм в бд и сравни owner до удаления
   Movie.findById(req.params._id)
-    .orFail(new Error('err 1 in findById-deleteMovie - no such movie'))
+    .orFail(new NotFoundError('Фильм с указанным _id не найден'))
     .then((movie) => {
       if (!movie.owner.equals(req.user._id)) {
-        throw new Error('err 2 in findById-deleteMovie - wrong owner');
+        throw ForbiddenError('Попытка удалить чужой фильм');
       }
       return res.status(200).send(movie);
     })
