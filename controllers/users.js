@@ -1,19 +1,14 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
+const {
+  STATUS_CREATED,
+  // MONGO_DUPLICATE_ERROR,
+  // STATUS_NOT_FOUND,
+} = require('../constants/http-status');
 
 const { SALT_ROUNDS = 10 } = process.env;
 const opts = { runValidators: true, new: true };
-
-// хитро удаляю пароль
-// const register = (req, res) => {
-//   User.create(req.body)
-//     .then((userData) => {
-//       const userWithoutPassword = userData.toObject();
-//       delete userWithoutPassword.password;
-//       return res.status(200).send(userWithoutPassword);
-//     });
-// };
 
 // На странице «Регистрация» клик по кнопке «Зарегистрироваться»
 // отправляет запрос на роут / signup, если данные введены корректно.
@@ -31,7 +26,7 @@ async function register(req, res) {
     const userWithoutPassword = user.toObject();
     delete userWithoutPassword.password;
     // кажется, тут нужно возвращать токен. При регистрации.
-    return res.status(200).send(userWithoutPassword);
+    return res.status(STATUS_CREATED).send(userWithoutPassword);
     // return res.status(200).send({
     //   email: user.email,
     //   name: user.name,
