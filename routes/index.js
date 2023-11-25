@@ -3,6 +3,7 @@ const moviesRouter = require('./moviesRouter');
 const usersRouter = require('./usersRouter');
 const wrongRequestsRouter = require('./wrong-requests-router');
 const { register, login } = require('../controllers/users');
+const auth = require('../middlewares/auth');
 
 // лишний
 appRouter.get('/', (req, res) => { res.status(200).send({ message: 'test passed' }); });
@@ -17,11 +18,13 @@ appRouter.post('/signup', register);
 appRouter.post('/signin', login);
 
 // ВРЕМЕННАЯ мидлвэра авторизации
-appRouter.use((req, res, next) => {
-  // req.user = { _id: '65607231a7b577dd2bc473e0' }; // gnom
-  req.user = { _id: '655e3e96ff2d766cf7aedf6a' }; // Zoia
-  next();
-});
+// appRouter.use((req, res, next) => {
+//   // req.user = { _id: '65607231a7b577dd2bc473e0' }; // gnom
+//   req.user = { _id: '655e3e96ff2d766cf7aedf6a' }; // Zoia
+//   next();
+// });
+
+appRouter.use(auth);
 
 appRouter.use('/users', usersRouter);
 appRouter.use('/movies', moviesRouter);
