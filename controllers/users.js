@@ -27,7 +27,8 @@ async function register(req, res, next) {
     const salt = await bcrypt.genSalt(Number(SALT_ROUNDS));
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    const user = await User.create({ email, name, password: hashedPassword });
+    const user = await User.create({ email, name, password: hashedPassword })
+      .orFail(new Error('Ошибка создания юзера'));
 
     const userWithoutPassword = user.toObject();
     delete userWithoutPassword.password;
