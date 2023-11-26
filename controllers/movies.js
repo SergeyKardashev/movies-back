@@ -49,7 +49,7 @@ function createMovie(req, res, next) {
       year: movie.year,
       description: movie.description,
       image: movie.image,
-      trailerLink: movie.trailerLink, // не как в запросе
+      trailer: movie.trailerLink, // не как в запросе
       thumbnail: movie.thumbnail,
       owner: movie.owner,
       movieId: movie.movieId,
