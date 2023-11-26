@@ -41,7 +41,6 @@ function createMovie(req, res, next) {
     nameRU,
     nameEN,
   })
-    .orFail(new Error('Ошибка создания фильма'))
     .then((movie) => res.status(STATUS_CREATED).send({
       // нужно возвращать не все поля, из много.
       country: movie.country,
