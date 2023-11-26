@@ -75,7 +75,8 @@ function deleteMovie(req, res, next) {
       if (!movie.owner.equals(req.user._id)) {
         return next(new ForbiddenError('Попытка удалить чужой фильм'));
       }
-      return res.send({ _id: movie._id });
+      return Movie.findByIdAndDelete(req.params._id)
+        .then((film) => res.send({ _id: film._id }));
     })
     .catch((err) => {
       if (err.name === 'CastError' || err.name === 'ValidationError') {
