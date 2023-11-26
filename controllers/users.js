@@ -1,5 +1,5 @@
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
+const generateToken = require('../utils/generateToken');
 const User = require('../models/user');
 const {
   STATUS_CREATED,
@@ -11,7 +11,7 @@ const NotFoundError = require('../constants/not-found-error');
 const ConflictError = require('../constants/conflict-error');
 const BadRequestError = require('../constants/bad-request-error');
 
-const { SALT_ROUNDS = 10, NODE_ENV, JWT_SECRET } = process.env;
+const { SALT_ROUNDS = 10 } = process.env;
 
 // настройки чтобы update возвращал обновленные данные, а не данные до обновления
 const opts = { runValidators: true, new: true };
@@ -56,12 +56,7 @@ async function login(req, res, next) {
     const matched = await bcrypt.compare(password, user.password);
     if (!matched) throw new UnauthorizedError('Неверные почта или пароль');
 
-    // можно вынести из login в утилиты функцию создания токена
-    const token = jwt.sign(
-      { _id: user._id },
-      NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret',
-      { expiresIn: '7d' },
-    );
+    const token = generateToken({ _id: user._id });
     return res.status(200).send({ token });
   } catch (err) {
     // console.error(err);
