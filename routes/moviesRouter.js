@@ -1,5 +1,6 @@
 const moviesRouter = require('express').Router();
 const { getMovies, createMovie, deleteMovie } = require('../controllers/movies');
+const { validateCreateMovie, validateDeleteMovie } = require('../validators/celebrate-validators');
 
 // возвращает все сохранённые текущим пользователем фильмы
 moviesRouter.get('/', getMovies);
@@ -7,15 +8,9 @@ moviesRouter.get('/', getMovies);
 // создаёт фильм с переданными в теле
 // country, director, duration, year, description, image,
 // trailer, nameRU, nameEN и thumbnail, movieId
-
-// const createMovie = (req, res) => {
-//   // нет проверки на ответ базы, нет отлова ошибок
-//   Movie.create(req.body)
-//     .then((movieData) => res.status(200).send(movieData));
-// };
-moviesRouter.post('/', createMovie);
+moviesRouter.post('/', validateCreateMovie, createMovie);
 
 // удаляет сохранённый фильм по id
-moviesRouter.delete('/:_id', deleteMovie);
+moviesRouter.delete('/:_id', validateDeleteMovie, deleteMovie);
 
 module.exports = moviesRouter;

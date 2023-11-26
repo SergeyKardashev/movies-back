@@ -3,6 +3,7 @@ const moviesRouter = require('./moviesRouter');
 const usersRouter = require('./usersRouter');
 const wrongRequestsRouter = require('./wrong-requests-router');
 const { register, login } = require('../controllers/users');
+const { validateRegister, validateLogin } = require('../validators/celebrate-validators');
 const auth = require('../middlewares/auth');
 
 // лишний
@@ -12,10 +13,10 @@ appRouter.get('/', (req, res) => { res.status(200).send({ message: 'test passed'
 // отправляет запрос на роут / signup, если данные введены корректно.
 // Если запрос прошёл успешно, то автоматически производится вход
 // и редирект на страницу / movies.
-appRouter.post('/signup', register);
+appRouter.post('/signup', validateRegister, register);
 
 // проверяет переданные в теле почту и пароль и возвращает JWT
-appRouter.post('/signin', login);
+appRouter.post('/signin', validateLogin, login);
 
 // ВРЕМЕННАЯ мидлвэра авторизации
 // appRouter.use((req, res, next) => {

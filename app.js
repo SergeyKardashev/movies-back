@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const helmet = require('helmet');
 const cors = require('cors');
+const { errors } = require('celebrate');
 const appRouter = require('./routes');
 const errorHandler = require('./middlewares/error-handler');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
@@ -22,6 +23,7 @@ app.use(requestLogger);
 app.use('/', appRouter);
 
 app.use(errorLogger);
+app.use(errors()); // from celebrate error handler
 app.use(errorHandler); // my global error handler and sorter for CAUGHT errors
 
 app.listen(PORT, () => {
