@@ -6,6 +6,7 @@ const { errors } = require('celebrate');
 const appRouter = require('./routes');
 const errorHandler = require('./middlewares/error-handler');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
+const limiter = require('./utils/limiter');
 
 const { PORT = 3000, DB_URL = 'mongodb://localhost:27017/bitfilmsdb' } = process.env;
 
@@ -17,6 +18,7 @@ app.use(helmet());
 app.use(cors());
 
 app.use(express.json());
+app.use(limiter); // Apply the rate limiting middleware to all requests.
 app.use(requestLogger);
 
 app.use('/', appRouter);
