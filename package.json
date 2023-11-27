@@ -10,7 +10,7 @@
     "start": "node app.js"
   },
   "keywords": [],
-  "author": "",
+  "author": "Sergei",
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^5.1.1",
