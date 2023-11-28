@@ -1,13 +1,10 @@
 const appRouter = require('express').Router();
-const moviesRouter = require('./moviesRouter');
-const usersRouter = require('./usersRouter');
+const moviesRouter = require('./movies-router');
+const usersRouter = require('./users-router');
 const wrongRequestsRouter = require('./wrong-requests-router');
 const { register, login } = require('../controllers/users');
 const { validateRegister, validateLogin } = require('../validators/celebrate-validators');
 const auth = require('../middlewares/auth');
-
-// лишний
-appRouter.get('/', (req, res) => { res.status(200).send({ message: 'test passed' }); });
 
 //  удалить краш-тестовый роут после ревью.
 appRouter.get('/crash-test', () => {

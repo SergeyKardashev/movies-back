@@ -1,5 +1,5 @@
 const bcrypt = require('bcrypt');
-const generateToken = require('../utils/generateToken');
+const generateToken = require('../utils/generate-token');
 const User = require('../models/user');
 const {
   STATUS_CREATED,
