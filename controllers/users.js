@@ -33,11 +33,6 @@ async function register(req, res, next) {
     delete userWithoutPassword.password;
     // кажется, тут нужно возвращать токен. При регистрации.
     return res.status(STATUS_CREATED).send(userWithoutPassword);
-    // return res.status(200).send({
-    //   email: user.email,
-    //   name: user.name,
-    //   _id: user._id,
-    // });
   } catch (err) {
     if (err.code === MONGO_DUPLICATE_ERROR) return next(new ConflictError('Этот email уже используется'));
     if (err.name === 'CastError' || err.name === 'ValidationError') return next(new BadRequestError('Переданы некорректные данные при создании пользователя'));
@@ -57,7 +52,7 @@ async function login(req, res, next) {
     if (!matched) throw new UnauthorizedError('Неверные почта или пароль');
 
     const token = generateToken({ _id: user._id });
-    return res.status(200).send({ token });
+    return res.send({ token });
   } catch (err) {
     // console.error(err);
     return next(err);
@@ -72,8 +67,7 @@ function getUser(req, res, next) {
       res.status(200).send({
         email: user.email,
         name: user.name,
-        // Не ясно возвращать ли айдишник
-        // наставник говорит можно
+        // наставник говорит можно возвращать айдишник
       });
     })
     .catch((err) => {
@@ -91,8 +85,7 @@ function updateUser(req, res, next) {
       res.status(200).send({
         email: user.email,
         name: user.name,
-        // Не ясно возвращать ли айдишник
-        // наставник говорит можно
+        // наставник говорит можно возвращать айдишник
       });
     })
     .catch((err) => {
