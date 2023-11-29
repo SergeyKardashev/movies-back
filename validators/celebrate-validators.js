@@ -5,11 +5,10 @@ module.exports.validateRegister = celebrate({
   body: Joi.object().keys({
     email: Joi.string().required().email(),
     password: Joi.string().required(),
-    repeat_password: Joi.ref('password'),
+    // repeat_password: Joi.ref('password'), // на бэк не приходит повтор пароля
     name: Joi.string().min(2).max(30),
   }),
 });
-
 module.exports.validateLogin = celebrate({
   body: Joi.object().keys({
     email: Joi.string().required().email(),
@@ -42,6 +41,6 @@ module.exports.validateCreateMovie = celebrate({
 
 module.exports.validateDeleteMovie = celebrate({
   params: Joi.object().keys({
-    _id: Joi.string().hex().required(),
+    _id: Joi.string().length(24).hex().required(),
   }),
 });
