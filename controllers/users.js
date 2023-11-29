@@ -63,15 +63,9 @@ async function login(req, res, next) {
 function getUser(req, res, next) {
   return User.findById(req.user._id)
     .orFail(new NotFoundError('_id не найден'))
-    .then((user) => {
-      res.status(200).send({
-        email: user.email,
-        name: user.name,
-        // наставник говорит можно возвращать айдишник
-      });
-    })
+    .then((user) => res.send(user)) // наставник говорит можно возвращать и айдишник
     .catch((err) => {
-      if (err.statusCode === 404) return next(new NotFoundError('Пользователь по указанному _id не найден'));
+      if (err.statusCode === STATUS_NOT_FOUND) return next(new NotFoundError('Пользователь по указанному _id не найден'));
       if (err.name === 'CastError') return next(new BadRequestError('Получение пользователя с некорректным id'));
       return next(err);
     });
@@ -81,14 +75,9 @@ function getUser(req, res, next) {
 function updateUser(req, res, next) {
   return User.findByIdAndUpdate(req.user._id, req.body, opts)
     .orFail(new NotFoundError())
-    .then((user) => {
-      res.status(200).send({
-        email: user.email,
-        name: user.name,
-        // наставник говорит можно возвращать айдишник
-      });
-    })
+    .then((user) => res.send(user)) // наставник говорит можно возвращать и айдишник
     .catch((err) => {
+      if (err.code === MONGO_DUPLICATE_ERROR) return next(new ConflictError('Этот email уже используется'));
       if (err.statusCode === STATUS_NOT_FOUND) return next(new NotFoundError('Пользователь по указанному _id не найден'));
       if (err.name === 'CastError') return next(new BadRequestError('Получение пользователя с некорректным id'));
       return next(err);
