@@ -71,7 +71,17 @@ function getUser(req, res, next) {
     });
 }
 
+// 🟡🟡🟡 функция, выбрасывающая ошибку. Нужна для тестирования фронта.
+function updateUserError(req, res, next) {
+  return User.findByIdAndUpdate(req.user._id, req.body, opts)
+    .orFail(new NotFoundError())
+    // .then(res.status(500).send('Внутренняя ошибка сервера'))
+    .then(res.status(500).json({ error: 'Внутренняя ошибка сервера' }))
+    .catch(next);
+}
+
 // обновляет информацию о пользователе (email и имя)
+// 🟡🟡🟡🟡 А как же айдишка ?
 function updateUser(req, res, next) {
   return User.findByIdAndUpdate(req.user._id, req.body, opts)
     .orFail(new NotFoundError())
@@ -89,4 +99,5 @@ module.exports = {
   login,
   getUser,
   updateUser,
+  updateUserError,
 };

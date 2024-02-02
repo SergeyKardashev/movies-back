@@ -14,6 +14,12 @@ mongoose.connect(DB_URL).then(console.log('MongoDB is connected'));
 
 const app = express();
 
+// мидлвера для логирования URL. Нужна только для отладки
+// app.use((req, res, next) => {
+//   console.log('Requested URL:', req.url);
+//   next();
+// });
+
 app.use(helmet());
 app.use(cors());
 
