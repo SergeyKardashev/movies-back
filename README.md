@@ -1,45 +1,32 @@
-# Дипломный проект movies-explorer-api
-
-Адрес репозитория: https://github.com/SergeyKardashev/movies-explorer-api
-
-
-## Цели
-
-Объединение разрозненных знаний в одном цельном проекте.
-Отработка навыков веб-разработки на javascript.
+# Бэк дипломного проекта fullstack разработчика.
+Чтобы запустить проект, потребуется [фронт](https://github.com/SergeyKardashev/movies-explorer-frontend).
 
 
-## Технологии
+## Цели проекта
 
-- фронтенд (HTML, CSS, JavaScript, React) 
-- бэкенд (Node.js, Express, MongoDB) 
-- инфраструктура (Webpack, Git, GitHub) 
-- devOps (VM, Ubuntu, Nginx, SSL)
+- Объединение разрозненных знаний в одном цельном проекте.
+- Отработка навыков веб-разработки на javascript.
 
 
-## Ссылки на проект
+## Технологии дипломного проекта
 
-IP  51.250.86.241
-Frontend  https://kinoman.nomoredomainsmonster.ru
-Backend   https://api.kinoman.nomoredomainsmonster.ru
+- Фронтенд: HTML, CSS, БЭМ, JavaScript, WebPack (CRA), React.
+- Бэкенд: Node.js, Express, MongoDB 
+- Инфраструктура (Webpack, Git, GitHub) 
+- DevOps (VM, Ubuntu в Яндекс.Облаке, Nginx, SSL)
+
 
 ### Описание проекта
 
+Сервис похож на кинопоиск. Пользователь регистрируется, авторизуется, ищет фильмы по базе, добавляет и избранное. По избранному тоже есть поиск.
+Есть фильтр по короткометражкам.
 
-**В работе применены технологии:**
 
-- html, css, js по БЭМ
-- frontend на React (webpack)
-- ООП, модульный подход, асинхронность
-- роутинг, авторизация
-- backend на Node.js и Express JS, деплой на Ubuntu в Яндекс.Облаке
-- хехирование паролей, авторизация на токенах, сбор логов
-- iron butt
-
-**Исходник**
-
-- [Ссылка на макет в Figma](https://www.figma.com/file/6FMWkB94wE7KTkcCgUXtnC/light-1?type=design&node-id=891-3857&mode=design&t=2o1n0jVrlmCiWxAF-0)
-
-**Репозиторий**
-
-- [Ссылка на репозиторий бэкэнда на GitHub](https://github.com/SergeyKardashev/movies-explorer-api)
+**В работе применены:**
+- ООП,
+- модульный подход,
+- асинхронность,
+- роутинг,
+- хехирование паролей,
+- авторизация на токенах,
+- сбор логов
