@@ -3,8 +3,8 @@
 
 Учебный проект. Цель - объединение разрозненных знаний в одном цельном проекте и закрепление навыков создания приложений на React и Express
 
-![screenshot1](https://github.com/SergeyKardashev/SergeyKardashev/raw/main/images/movie_thumb_01.jpg)
-![screenshot2](https://github.com/SergeyKardashev/SergeyKardashev/raw/main/images/movie_thumb_02.jpg)
+![screenshot1](https://github.com/SergeyKardashev/movies-back/raw/assets/images/movie_thumb_01.jpg)
+![screenshot2](https://github.com/SergeyKardashev/movies-back/raw/assets/images/movie_thumb_02.jpg)
 
 [Макет](https://www.figma.com/file/6FMWkB94wE7KTkcCgUXtnC/%D0%94%D0%B8%D0%BF%D0%BB%D0%BE%D0%BC%D0%BD%D1%8B%D0%B9-%D0%BF%D1%80%D0%BE%D0%B5%D0%BA%D1%82?type=design&node-id=932%3A2618&mode=design&t=fHND1xSTLpbm4IQN-1) в Figma
 
